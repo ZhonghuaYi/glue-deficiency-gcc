@@ -21,7 +21,10 @@ int main() {
     vector<string>::iterator i;
     for (i = sample.begin(); i != sample.end(); ++i) {
         Mat image = imread(*i, 1);
-        Mat hist = calcHist()
+        Mat hist;
+        vector<float> range = { 0, 256 };
+        calcHist(&image, 1, 0, Mat(), hist, 1, 256, range);
+
     }
 
     for (vector<int>::size_type i = 0; i < target_region_areas.size(); ++i)
