@@ -74,8 +74,11 @@ int main() {
         calcHist(&image, 1, channels, Mat(), hist, 1, histSize, ranges);
         */
 
+
         /*
-        
+        * 在参考图像中，当手动阈值在37时，阈值分割效果明显。于是考虑到灰度小于37的区域大概面积占比是0.3，
+        * 于是将图像中灰度值较低的30%区域分割出来。这里利用了cdf，它本身是直方图的累积分布，因此只需要寻找
+        * cdf中最接近0.3的位置，其索引即是能够将30%灰度比较低的区域分割出来的阈值
         */
         hist = getHistogram(image);
         //cout << hist << endl;
@@ -84,8 +87,26 @@ int main() {
         minMaxIdx(abs(img_cdf - 0.3), 0, 0, point, 0);
         int index = point[1];
 
+
+        /*
+        * 得到阈值后，对图像进行阈值分割，然后对不规则区域应用中值滤波平滑。
+        * 每次平滑后，需要通过膨胀背景从而腐蚀物体，以使得目标区域能够更容易被分离
+        */
+        medianBlur(image, image, 9);
+        dilate(image, image, structure_element);
+
+        resize(image, image, Size(400, 400));
+        medianBlur(image, image, 3);
+        dilate(image, image, structure_element);
+
+        resize(image, image, Size(70, 70));
+        threshold(image, image, index, 255, THRESH_BINARY);
+        Mat compare = Mat::ones(image.size(), image.depth()) * 255;
+        Mat diff = compare == image;
+        cout << diff << endl;
+
         namedWindow("img");
-        imshow("img", image);
+        imshow("img", diff);
         break;
     }
 
