@@ -9,10 +9,16 @@ vector<string> REFER_LIST = { "test000.bmp" };
 vector<string> DEFECT_LIST = { "test001.bmp", "test002.bmp" };
 int PRE_AREA_NUM = 12;
 
+struct SubRegion {
+    int value;
+    int area;
+    vector<int> start;
+};
+
 /// <summary>
 /// get normalized histogram.
 /// </summary>
-/// <param name="img"></param>
+/// <param name="img">: input image. </param>
 /// <returns>
 /// normalized histogram of input image.
 /// </returns>
@@ -32,7 +38,7 @@ Mat getHistogram(const Mat& img) {
 /// <summary>
 /// get the cumulative distribution fuction(CDF) of image.
 /// </summary>
-/// <param name="in_pic_histogram"></param>
+/// <param name="in_pic_histogram">: histogram of image. </param>
 /// <returns>
 /// CDF of the image.
 /// </returns>
@@ -48,6 +54,35 @@ Mat cdf(const Mat& in_pic_histogram) {
     transform.convertTo(transform, CV_32SC1);
     transform.convertTo(transform, in_pic_histogram.depth());
     return transform;
+}
+
+/// <summary>
+/// search region using recursion.
+/// </summary>
+/// <param name="img">: input image. </param>
+/// <param name="x">: x coordinate in row direction. </param>
+/// <param name="y">: y coordinate in column direction</param>
+/// <param name="value">: new value of region, in order to saperate from origin value. </param>
+/// <param name="region_area">: area of region. </param>
+/// <returns></returns>
+int neighbor_expand(Mat &img,  int x, int y, int value, int region_area) {
+    img.at<int>(x, y) = value;
+    region_area += 1;
+    vector<int> img_shape = { img.rows, img.cols };
+    vector<vector<int>> ind = { {x, y + 1}, {x + 1, y}, {x, y - 1}, {x - 1, y} };
+    for (vector<int>i : ind) {
+        if ((i[0] < 0) || (i[0] >= img_shape[0]) || (i[1] < 0) || (i[1] >= img_shape[1]))
+            continue;
+        if (img.at<int>(i[0], i[1]) == 0)
+            region_area = neighbor_expand(img, i[0], i[1], value, region_area);
+    }
+        
+    return region_area;
+}
+
+
+SubRegion area_segment(Mat& img, int pre_area_num) {
+
 }
 
 int main() {
@@ -103,7 +138,8 @@ int main() {
         threshold(image, image, index, 255, THRESH_BINARY);
         Mat compare = Mat::ones(image.size(), image.depth()) * 255;
         Mat diff = compare == image;
-        cout << diff << endl;
+        //cout << diff << endl;
+        neighbor_expand(image, 0, 0, 0, 0);
 
         namedWindow("img");
         imshow("img", diff);
