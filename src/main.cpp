@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <vector>
 #include <opencv2/opencv.hpp>
+#include <ctime>
 
 using namespace std;
 using namespace cv;
@@ -24,6 +25,35 @@ vector<int> linspace(float start, float stop, int num) {
         temp = temp + step;
     }
     return out;
+}
+
+vector<int> range(int num) {
+    vector<int> out(num, 0);
+    for (int i = 0; i < num; ++i)
+        out[i] = i;
+
+    return out;
+}
+
+void quickSortWithIndex(vector<int>& v, vector<int>& v_index, int start, int end) {
+    if (start < end) {
+        int x = v[start];
+        int i = start;
+        int j;
+        for (j = start + 1; j < end; j++) {
+            if (v[j] <= x) {
+                i++;
+                swap(v[i], v[j]);
+                swap(v_index[i], v_index[j]);
+            }
+
+        }
+
+        swap(v[i], v[start]);
+        swap(v_index[i], v_index[start]);
+        quickSortWithIndex(v, v_index, start, i);
+        quickSortWithIndex(v, v_index, i + 1, end);
+    }
 }
 
 /// <summary>
@@ -116,6 +146,10 @@ SubRegion area_segment(Mat& img, int pre_area_num) {
 }
 
 int main() {
+
+    clock_t time_start, time_end;
+    time_start = clock();
+
     string img_root_path = "../image/";
     vector<string> sample;
     sample.insert(sample.end(), REFER_LIST.begin(), REFER_LIST.end());
@@ -126,7 +160,7 @@ int main() {
     vector<int> target_region_areas;
 
     vector<string>::iterator i;
-    for (string i :sample) {
+    for (string i : sample) {
         Mat image = imread(img_root_path + i, 0);
         Mat hist;
         
@@ -167,11 +201,7 @@ int main() {
 
         resize(image, image, Size(70, 70));
         threshold(image, image, index, 255, THRESH_BINARY);
-        Mat compare;
-        compare = Mat::ones(image.size(), image.depth()) * 255;
-        Mat diff = compare == image;
-        //cout << diff << endl;
-        
+
 
         /*
         * 将图像分成若干个区域
@@ -183,15 +213,41 @@ int main() {
         /*
         * 将面积第二的区域提取出来
         */
+        vector<int> regions_area = sub_regions.area;
+        vector<int> regions_area_index = range(regions_area.size());
+        quickSortWithIndex(regions_area, regions_area_index, 0, regions_area.size());
+        int ind = regions_area_index[regions_area_index.size() - 2];
+        int target_region_value = sub_regions.value[ind];  // 获取到面积第二的区域的值
+        target_region_areas.push_back(sub_regions.area[ind]);  // 将该区域的面积记录下来
+        Mat compare_mat = Mat::ones(image.size(), image.depth()) * target_region_value;
+        Mat diff = compare_mat != image;
+        image = diff;
 
 
-        namedWindow("img");
-        imshow("img", image);
-        break;
+        /*
+        * 输出所有子区域区域信息
+        */
+        cout << "value of subregions: ";
+        for (auto i : sub_regions.value)
+            cout << i << ' ';
+        cout << endl;
+        cout << "area of subregions: ";
+        for (auto i : sub_regions.area)
+            cout << i << ' ';
+        cout << endl << endl;
+
+        namedWindow("img" + to_string(count));
+        imshow("img" + to_string(count), image);
+        count++;
     }
 
-    for (int target_region_area : target_region_areas)
-        cout << target_region_area << endl;
+    cout << "area of target regions: ";
+    for (auto target_region_area : target_region_areas)
+        cout << target_region_area << ' ';
+
+    time_end = clock();
+    cout << endl << "program running time: " << double(time_end - time_start) / CLOCKS_PER_SEC << "s";
+
     waitKey(0);
     destroyAllWindows();
     return 0;
