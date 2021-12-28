@@ -10,10 +10,21 @@ vector<string> DEFECT_LIST = { "test001.bmp", "test002.bmp" };
 int PRE_AREA_NUM = 12;
 
 struct SubRegion {
-    int value;
-    int area;
-    vector<int> start;
+    vector<int> value;
+    vector<int> area;
+    vector<vector<int>> start;
 };
+
+vector<int> linspace(float start, float stop, int num) {
+    float step = (stop - start) / num;
+    vector<int> out;
+    float temp = start;
+    for (int i = 0; i < num; ++i) {
+        out.push_back(int(temp));
+        temp = temp + step;
+    }
+    return out;
+}
 
 /// <summary>
 /// get normalized histogram.
@@ -23,7 +34,7 @@ struct SubRegion {
 /// normalized histogram of input image.
 /// </returns>
 Mat getHistogram(const Mat& img) {
-    Mat hist = Mat::zeros(Size(256, 1), CV_32FC1);
+    Mat hist = Mat::zeros(Size(256, 1), CV_32F);
     Mat out;
     for (int i = 0; i < img.rows; i++) {
         for (int j = 0; j < img.cols; j++) {
@@ -51,8 +62,8 @@ Mat cdf(const Mat& in_pic_histogram) {
         transform.at<float>(0, i) = temp;
     }
     transform = transform * (hist_size - 1);
-    transform.convertTo(transform, CV_32SC1);
-    transform.convertTo(transform, in_pic_histogram.depth());
+    transform.convertTo(transform, CV_32S);
+    transform.convertTo(transform, CV_32F);
     return transform;
 }
 
@@ -66,14 +77,14 @@ Mat cdf(const Mat& in_pic_histogram) {
 /// <param name="region_area">: area of region. </param>
 /// <returns></returns>
 int neighbor_expand(Mat &img,  int x, int y, int value, int region_area) {
-    img.at<int>(x, y) = value;
+    img.at<uchar>(x, y) = value;
     region_area += 1;
     vector<int> img_shape = { img.rows, img.cols };
     vector<vector<int>> ind = { {x, y + 1}, {x + 1, y}, {x, y - 1}, {x - 1, y} };
     for (vector<int>i : ind) {
         if ((i[0] < 0) || (i[0] >= img_shape[0]) || (i[1] < 0) || (i[1] >= img_shape[1]))
             continue;
-        if (img.at<int>(i[0], i[1]) == 0)
+        if (img.at<uchar>(i[0], i[1]) == 0)
             region_area = neighbor_expand(img, i[0], i[1], value, region_area);
     }
         
@@ -82,7 +93,26 @@ int neighbor_expand(Mat &img,  int x, int y, int value, int region_area) {
 
 
 SubRegion area_segment(Mat& img, int pre_area_num) {
-
+    vector<int> region_value = linspace(2, 255, pre_area_num);
+    int region_num = 0;
+    SubRegion out;
+    vector<int> img_shape = { img.rows, img.cols };
+    for (int i = 0; i < img_shape[0]; ++i) {
+        for (int j = 0; j < img_shape[1]; ++j) {
+            if (img.at<uchar>(i, j) == 0) {
+                int value = 0;
+                int area = 0;
+                vector<int> start = { i ,j };
+                value = region_value[region_num];
+                area = neighbor_expand(img, i, j, value, area);
+                region_num += 1;
+                out.value.push_back(value);
+                out.area.push_back(area);
+                out.start.push_back(start);
+            }
+        }
+    }
+    return out;
 }
 
 int main() {
@@ -117,7 +147,8 @@ int main() {
         */
         hist = getHistogram(image);
         //cout << hist << endl;
-        Mat img_cdf = cdf(hist) / 255.;
+        Mat img_cdf;
+        img_cdf = cdf(hist) / 255;
         int point[2] = {};
         minMaxIdx(abs(img_cdf - 0.3), 0, 0, point, 0);
         int index = point[1];
@@ -136,13 +167,26 @@ int main() {
 
         resize(image, image, Size(70, 70));
         threshold(image, image, index, 255, THRESH_BINARY);
-        Mat compare = Mat::ones(image.size(), image.depth()) * 255;
+        Mat compare;
+        compare = Mat::ones(image.size(), image.depth()) * 255;
         Mat diff = compare == image;
         //cout << diff << endl;
-        neighbor_expand(image, 0, 0, 0, 0);
+        
+
+        /*
+        * 将图像分成若干个区域
+        */
+        SubRegion sub_regions;
+        sub_regions = area_segment(image, PRE_AREA_NUM);
+        
+
+        /*
+        * 将面积第二的区域提取出来
+        */
+
 
         namedWindow("img");
-        imshow("img", diff);
+        imshow("img", image);
         break;
     }
 
