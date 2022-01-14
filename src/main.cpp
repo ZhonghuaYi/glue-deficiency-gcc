@@ -4,6 +4,7 @@
 
 
 int main() {
-    detect::class1Defect1();
+    using namespace detect;
+    defect1();
     return 0;
 }
