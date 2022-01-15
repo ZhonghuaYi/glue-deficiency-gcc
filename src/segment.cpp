@@ -11,7 +11,7 @@
 /// <param name="pre_area_num">: 预设的最大区域数量 </param>
 /// <param name="structure_element">: 用于形态学计算的结构元素 </param>
 /// <returns> 目标区域的面积 </returns>
-int segment::threshold_segment(cv::Mat& image, float area_percent, int pre_area_num, cv::Mat structure_element) {
+int segment::thresholdSegment(cv::Mat& image, float area_percent, int pre_area_num, cv::Mat structure_element) {
     using namespace std;
 	using namespace cv;
 	image = image(Range(0, 800), Range(0, 800));
@@ -63,7 +63,7 @@ int segment::threshold_segment(cv::Mat& image, float area_percent, int pre_area_
     * 将图像分成若干个区域
     */
     SubRegion sub_regions;
-    sub_regions = func::area_segment(image, pre_area_num);
+    sub_regions = func::areaSegment(image, pre_area_num);
 
 
     /*
@@ -90,7 +90,7 @@ int segment::threshold_segment(cv::Mat& image, float area_percent, int pre_area_
 /// <param name="target_template">: 目标区域的模板 </param>
 /// <param name="canny">: Canny法的低阈值和高阈值 </param>
 /// <returns> 目标区域与模板的相关系数 </returns>
-float segment::template_match(cv::Mat& image, const cv::Mat target_template, const int* canny) {
+float segment::templateMatch(cv::Mat& image, const cv::Mat target_template, const int* canny) {
     using namespace std;
     using namespace cv;
 

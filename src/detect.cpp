@@ -1,4 +1,4 @@
-#include<iostream>
+ï»¿#include<iostream>
 #include<vector>
 #include<opencv2/core.hpp>
 #include<opencv2/imgproc.hpp>
@@ -15,55 +15,60 @@ void detect::defect1()
     using namespace cv;
 
     /*
-    * ¶ÁÈ¡Ñù±¾
+    * è¯»å–æ ·æœ¬
     */
-    vector<string> REFER_LIST = { "test000.bmp" };
-    vector<string> DEFECT_LIST = { "test001.bmp", "test002.bmp" };
-    string img_root_path = "../image/";
+    vector<string> REFER_LIST = { "refer000.BMP" };
+    vector<string> DEFECT_LIST = { "defect000.BMP", "defect001.BMP" };
+    string img_root_path = "../image/class1_defect1/";
+    for (auto& i : REFER_LIST)
+        i = img_root_path + i;
+
+    for (auto& i : DEFECT_LIST)
+        i = img_root_path + i;
+
     vector<string> sample;
     sample.insert(sample.end(), REFER_LIST.begin(), REFER_LIST.end());
     sample.insert(sample.end(), DEFECT_LIST.begin(), DEFECT_LIST.end());
 
     /*
-    * Éè¶¨³ÌĞò¿ªÊ¼ÔËĞĞÊ±¼ä
+    * è®¾å®šç¨‹åºå¼€å§‹è¿è¡Œæ—¶é—´
     */
     clock_t time_start, time_end;
     time_start = clock();
 
-    int count = 1;  // Í¼ÏñµÄ¼ÆÊı
-    vector<int> results; // ´æ´¢Ñù±¾µÄÅĞ¶Ï½á¹û
+    int count = 1;  // å›¾åƒçš„è®¡æ•°
+    vector<int> results; // å­˜å‚¨æ ·æœ¬çš„åˆ¤æ–­ç»“æœ
 
-    string method = "thresh"; // Ê¹ÓÃµÄ·Ö¸î·½·¨
-    string f = "ccoeff";  // ÓÃÀ´·ÖÀàµÄÌØÕ÷
+    string method = "thresh"; // ä½¿ç”¨çš„åˆ†å‰²æ–¹æ³•
+    string f = "ccoeff";  // ç”¨æ¥åˆ†ç±»çš„ç‰¹å¾
 
     if (method == "thresh") {
-        float AREA_PRECENT = 0.3;  // »Ò¶ÈãĞÖµµÄÃæ»ıÕ¼±È
-        int PRE_AREA_NUM = 12;  // Ô¤ÉèµÄ×î´óÇøÓòÊıÁ¿
-        int NORMAL_AREA = 420;  // Ä¿±êÇøÓòµÄÍêÕûÃæ»ı
+        float AREA_PRECENT = 0.3;  // ç°åº¦é˜ˆå€¼çš„é¢ç§¯å æ¯”
+        int PRE_AREA_NUM = 12;  // é¢„è®¾çš„æœ€å¤§åŒºåŸŸæ•°é‡
+        int NORMAL_AREA = 420;  // ç›®æ ‡åŒºåŸŸçš„å®Œæ•´é¢ç§¯
 
         /*
-        * ÓÃÓÚĞÎÌ¬Ñ§¼ÆËãµÄ¾ØĞÎ½á¹¹ÔªËØ
+        * ç”¨äºå½¢æ€å­¦è®¡ç®—çš„çŸ©å½¢ç»“æ„å…ƒç´ 
         */
         Mat structure_element = getStructuringElement(MORPH_RECT, Size(7, 7));
         vector<int> target_region_areas;
 
-        vector<string>::iterator i;
-        for (string i : sample) {
-            Mat image = imread(img_root_path + i, 0);
+        for (auto i : sample) {
+            Mat image = imread(i, 0);
             
             /*
-            * ãĞÖµ·Ö¸î
+            * é˜ˆå€¼åˆ†å‰²
             */
-            int region_area = segment::threshold_segment(image, AREA_PRECENT, PRE_AREA_NUM, structure_element);
+            int region_area = segment::thresholdSegment(image, AREA_PRECENT, PRE_AREA_NUM, structure_element);
 
             /*
-            * ¸ù¾İÌØÕ÷ÅĞ¶Ï´ËÑù±¾ÊÇ·ñºÏ¸ñ£¬resultÎª1±íÊ¾ºÏ¸ñ£¬0±íÊ¾ÓĞÈ±Ïİ
+            * æ ¹æ®ç‰¹å¾åˆ¤æ–­æ­¤æ ·æœ¬æ˜¯å¦åˆæ ¼ï¼Œresultä¸º1è¡¨ç¤ºåˆæ ¼ï¼Œ0è¡¨ç¤ºæœ‰ç¼ºé™·
             */
-            int result = feature::region_area(region_area, NORMAL_AREA);
+            int result = feature::regionArea(region_area, NORMAL_AREA);
             results.push_back(result);
 
             /*
-            * ÏÔÊ¾×îÖÕ·ÖÀë³öµÄÇøÓòµÄÍ¼Ïñ
+            * æ˜¾ç¤ºæœ€ç»ˆåˆ†ç¦»å‡ºçš„åŒºåŸŸçš„å›¾åƒ
             */
             namedWindow("img" + to_string(count));
             imshow("img" + to_string(count), image);
@@ -89,5 +94,96 @@ void detect::defect1()
 }
 
 void detect::defect2() {
+    using namespace std;
+    using namespace cv;
 
+    /*
+    * è¯»å–æ ·æœ¬
+    */
+    vector<string> REFER_LIST = { "refer000.BMP" };
+    vector<string> DEFECT_LIST = { "defect000.BMP", "defect001.BMP" };
+    string img_root_path = "../image/class1_defect2/";
+    for (auto& i : REFER_LIST)
+        i = img_root_path + i;
+
+    for (auto& i : DEFECT_LIST)
+        i = img_root_path + i;
+
+    vector<string> sample;
+    sample.insert(sample.end(), REFER_LIST.begin(), REFER_LIST.end());
+    sample.insert(sample.end(), DEFECT_LIST.begin(), DEFECT_LIST.end());
+
+    /*
+    * è®¾å®šç¨‹åºå¼€å§‹è¿è¡Œæ—¶é—´
+    */
+    clock_t time_start, time_end;
+    time_start = clock();
+
+    int count = 1;  // å›¾åƒçš„è®¡æ•°
+    vector<int> results; // å­˜å‚¨æ ·æœ¬çš„åˆ¤æ–­ç»“æœ
+
+    string method = "template_match"; // ä½¿ç”¨çš„åˆ†å‰²æ–¹æ³•
+    string f = "ccoeff";  // ç”¨æ¥åˆ†ç±»çš„ç‰¹å¾
+
+    if (method == "template_match") {
+        int canny[2] = { 100, 200 };  // cannyæ³•çš„ä¸¤ä¸ªé˜ˆå€¼
+
+        /*
+        * ç”Ÿæˆæ¨¡æ¿
+        */
+        
+        Mat target_template = func::templateGenerate(REFER_LIST, Range(20, 100), Range(220, 470), canny);
+        imshow("template", target_template);
+
+        for (auto i : sample) {
+            Mat image = imread(i, 0);
+            float max_ccoeff = 0;
+            Mat match_image;
+            for (int i = 0; i <= 20; ++i) {
+                float angle = i * 0.5 - 5;
+                Mat M = getRotationMatrix2D(Point(image.cols / 2, image.rows / 2), angle, 1);
+                Mat temp_image;
+                warpAffine(image, temp_image, M, image.size());
+
+                float CCOEFF = segment::templateMatch(temp_image, target_template, canny);
+                
+                if (CCOEFF >= max_ccoeff) {
+                    max_ccoeff = CCOEFF;
+                    match_image = temp_image;
+                }
+            }
+
+            image = match_image;
+
+            /*
+            * æ˜¾ç¤ºæœ€ç»ˆåˆ†ç¦»å‡ºçš„åŒºåŸŸçš„å›¾åƒ
+            */
+            imshow("img" + to_string(count), image);
+
+            /*
+            * æ ¹æ®ç‰¹å¾åˆ¤æ–­æ­¤æ ·æœ¬æ˜¯å¦åˆæ ¼ï¼ˆåˆæ ¼ä¸ºTrueï¼‰
+            */
+            if (f == "ccoeff") {
+                cout << "sample " << count << "'s correlation coefficient is " << max_ccoeff << endl;
+                int result = feature::correlation(max_ccoeff);
+                results.push_back(result);
+            }
+
+            count++;
+        }
+
+        cout << "results: " << endl;
+        for (auto i : results) {
+            if (i == 1)
+                cout << "True ";
+            else
+                cout << "Flase ";
+        }
+
+        time_end = clock();
+        cout << endl << "program running time: " << double(time_end - time_start) / CLOCKS_PER_SEC << "s";
+
+        waitKey(0);
+        destroyAllWindows();
+    }
 }

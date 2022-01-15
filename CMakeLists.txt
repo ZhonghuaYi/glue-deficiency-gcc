@@ -1,5 +1,4 @@
 ﻿cmake_minimum_required(VERSION 3.17)
-add_definitions(-std=c++14)
 project(glue_deficiency_gcc)
 set(CMAKE_CXX_STANDARD 14)
 

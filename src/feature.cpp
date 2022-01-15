@@ -6,7 +6,7 @@
 /// <param name="area">: 检测到的区域面积 </param>
 /// <param name="normal_area">: 没有缺陷时的区域的面积 </param>
 /// <returns></returns>
-int feature::region_area(int area, int normal_area) {
+int feature::regionArea(int area, int normal_area) {
 	if (float(area) / normal_area < 0.9)
 		return 0;
 	else

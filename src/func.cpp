@@ -1,7 +1,7 @@
 #include "func.h"
 
-using std::vector;
-using namespace cv;
+#include<opencv2/highgui.hpp>
+#include<opencv2/imgproc.hpp>
 
 /// <summary>
 /// generate a vector on [%start, %end), with %num elements.
@@ -10,7 +10,9 @@ using namespace cv;
 /// <param name="stop">: end value(not included). </param>
 /// <param name="num">: elements' numbers of vector. </param>
 /// <returns> vetor with int values. </returns>
-vector<int> func::linspace(float start, float stop, int num) {
+std::vector<int> func::linspace(float start, float stop, int num) {
+    using std::vector;
+
     float step = (stop - start) / num;
     vector<int> out;
     float temp = start;
@@ -21,18 +23,22 @@ vector<int> func::linspace(float start, float stop, int num) {
     return out;
 }
 
+
 /// <summary>
 /// generate a vector range from 0 to num-1.
 /// </summary>
 /// <param name="num"></param>
 /// <returns> vector of int values. </returns>
-vector<int> func::range(int num) {
+std::vector<int> func::range(int num) {
+    using std::vector;
+
     vector<int> out(num, 0);
     for (int i = 0; i < num; ++i)
         out[i] = i;
 
     return out;
 }
+
 
 /// <summary>
 /// use quick sort on vector %v, return sorted vector v and sorted index.
@@ -41,7 +47,7 @@ vector<int> func::range(int num) {
 /// <param name="v_index">: original index of %v, range from 0 to v.size(). </param>
 /// <param name="start">: start index of vector v. </param>
 /// <param name="end">: end index of vector v. </param>
-void func::quickSortWithIndex(vector<int>& v, vector<int>& v_index, int start, int end) {
+void func::quickSortWithIndex(std::vector<int>& v, std::vector<int>& v_index, int start, int end) {
     if (start < end) {
         int x = v[start];
         int i = start;
@@ -62,6 +68,7 @@ void func::quickSortWithIndex(vector<int>& v, vector<int>& v_index, int start, i
     }
 }
 
+
 /// <summary>
 /// get normalized histogram.
 /// </summary>
@@ -69,7 +76,9 @@ void func::quickSortWithIndex(vector<int>& v, vector<int>& v_index, int start, i
 /// <returns>
 /// normalized histogram of input image.
 /// </returns>
-Mat func::getHistogram(const Mat& img) {
+cv::Mat func::getHistogram(const cv::Mat& img) {
+    using namespace cv;
+
     Mat hist = Mat::zeros(Size(256, 1), CV_32F);
     Mat out;
     for (int i = 0; i < img.rows; i++) {
@@ -82,6 +91,7 @@ Mat func::getHistogram(const Mat& img) {
     return out;
 }
 
+
 /// <summary>
 /// get the cumulative distribution fuction(CDF) of image.
 /// </summary>
@@ -89,7 +99,9 @@ Mat func::getHistogram(const Mat& img) {
 /// <returns>
 /// CDF of the image.
 /// </returns>
-Mat func::cdf(const Mat& in_pic_histogram) {
+cv::Mat func::cdf(const cv::Mat& in_pic_histogram) {
+    using namespace cv;
+
     int hist_size = in_pic_histogram.total();
     Mat transform = Mat::zeros(in_pic_histogram.size(), in_pic_histogram.depth());
     float temp = 0.;
@@ -103,6 +115,7 @@ Mat func::cdf(const Mat& in_pic_histogram) {
     return transform;
 }
 
+
 /// <summary>
 /// search region using recursion.
 /// </summary>
@@ -112,7 +125,10 @@ Mat func::cdf(const Mat& in_pic_histogram) {
 /// <param name="value">: new value of region, in order to saperate from origin value. </param>
 /// <param name="region_area">: area of region. </param>
 /// <returns></returns>
-int func::neighbor_expand(Mat& img, int x, int y, int value, int region_area) {
+int func::neighborExpand(cv::Mat& img, int x, int y, int value, int region_area) {
+    using namespace cv;
+    using std::vector;
+
     img.at<uchar>(x, y) = value;
     region_area += 1;
     vector<int> img_shape = { img.rows, img.cols };
@@ -121,14 +137,17 @@ int func::neighbor_expand(Mat& img, int x, int y, int value, int region_area) {
         if ((i[0] < 0) || (i[0] >= img_shape[0]) || (i[1] < 0) || (i[1] >= img_shape[1]))
             continue;
         if (img.at<uchar>(i[0], i[1]) == 0)
-            region_area = neighbor_expand(img, i[0], i[1], value, region_area);
+            region_area = neighborExpand(img, i[0], i[1], value, region_area);
     }
 
     return region_area;
 }
 
 
-SubRegion func::area_segment(Mat& img, int pre_area_num) {
+SubRegion func::areaSegment(cv::Mat& img, int pre_area_num) {
+    using namespace cv;
+    using std::vector;
+
     vector<int> region_value = linspace(2, 255, pre_area_num);
     int region_num = 0;
     SubRegion out;
@@ -140,7 +159,7 @@ SubRegion func::area_segment(Mat& img, int pre_area_num) {
                 int area = 0;
                 vector<int> start = { i ,j };
                 value = region_value[region_num];
-                area = neighbor_expand(img, i, j, value, area);
+                area = neighborExpand(img, i, j, value, area);
                 region_num += 1;
                 out.value.push_back(value);
                 out.area.push_back(area);
@@ -149,4 +168,45 @@ SubRegion func::area_segment(Mat& img, int pre_area_num) {
         }
     }
     return out;
+}
+
+
+cv::Mat templateGenerate(std::vector<std::string> refer_sample, cv::Range row_wise, cv::Range col_wise, const int canny[]) {
+    using namespace cv;
+    using std::vector;
+    using std::string;
+
+    /*
+    * 第一步，对每张图像缩放，然后求所有图像的平均
+    */
+    Mat t;
+    float refer_count = 0;
+    for (auto i : refer_sample) {
+        Mat image = imread(i, 0);
+        float scale = (image.rows < image.cols ? image.rows : image.cols) / float(500);
+        Size new_size = Size(round(image.cols / scale), round(image.rows / scale));
+        resize(image, image, new_size);
+        image = image(row_wise, col_wise);
+        image.convertTo(image, CV_32F);
+        if (refer_count == 0)
+            t = Mat::zeros(image.size(), image.depth());
+
+        t = t + image;
+        refer_count += 1;
+    }
+
+    t = t / refer_count;
+    t.convertTo(t, CV_8U);
+
+    /*
+    * 第二步，对图像进行高斯平滑
+    */
+    GaussianBlur(t, t, Size(3, 3), 1);
+
+    /*
+    * 第三步，Canny法提取图像边缘
+    */
+    Canny(t, t, canny[0], canny[1]);
+
+    return t;
 }

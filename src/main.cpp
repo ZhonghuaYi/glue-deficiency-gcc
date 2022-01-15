@@ -5,6 +5,6 @@
 
 int main() {
     using namespace detect;
-    defect1();
+    defect2();
     return 0;
 }

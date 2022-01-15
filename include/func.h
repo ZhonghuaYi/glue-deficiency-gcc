@@ -4,7 +4,6 @@
 #include<iostream>
 #include<vector>
 #include<opencv2/core.hpp>
-#include<opencv2/imgproc.hpp>
 
 struct SubRegion {
     std::vector<int> value;
@@ -18,8 +17,9 @@ namespace func {
     void quickSortWithIndex(std::vector<int>& v, std::vector<int>& v_index, int start, int end);
     cv::Mat getHistogram(const cv::Mat& img);
     cv::Mat cdf(const cv::Mat& in_pic_histogram);
-    int neighbor_expand(cv::Mat& img, int x, int y, int value, int region_area);
-    SubRegion area_segment(cv::Mat& img, int pre_area_num);
+    int neighborExpand(cv::Mat& img, int x, int y, int value, int region_area);
+    SubRegion areaSegment(cv::Mat& img, int pre_area_num);
+    cv::Mat templateGenerate(std::vector<std::string> refer_sample, cv::Range row_wise, cv::Range col_wise, const int canny[]);
 }
 
 #endif // !__FUNC_H_
