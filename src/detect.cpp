@@ -55,6 +55,7 @@ void detect::defect1()
 
         for (auto i : sample) {
             Mat image = imread(i, 0);
+            image = image(Range(0, 800), Range(0, 800));
             
             /*
             * 阈值分割
@@ -101,7 +102,7 @@ void detect::defect2() {
     * 读取样本
     */
     vector<string> REFER_LIST = { "refer000.BMP" };
-    vector<string> DEFECT_LIST = { "defect000.BMP", "defect001.BMP" };
+    vector<string> DEFECT_LIST = { "defect000.BMP" };
     string img_root_path = "../image/class1_defect2/";
     for (auto& i : REFER_LIST)
         i = img_root_path + i;
@@ -132,7 +133,8 @@ void detect::defect2() {
         * 生成模板
         */
         
-        Mat target_template = func::templateGenerate(REFER_LIST, Range(20, 100), Range(220, 470), canny);
+        Mat target_template;
+        target_template = func::templateGenerate(REFER_LIST, Range(20, 100), Range(220, 470), canny);
         imshow("template", target_template);
 
         for (auto i : sample) {

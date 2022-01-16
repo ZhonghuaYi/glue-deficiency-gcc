@@ -1,4 +1,4 @@
-#include "func.h"
+ï»¿#include "func.h"
 
 #include<opencv2/highgui.hpp>
 #include<opencv2/imgproc.hpp>
@@ -171,13 +171,13 @@ SubRegion func::areaSegment(cv::Mat& img, int pre_area_num) {
 }
 
 
-cv::Mat templateGenerate(std::vector<std::string> refer_sample, cv::Range row_wise, cv::Range col_wise, const int canny[]) {
+cv::Mat func::templateGenerate(std::vector<std::string> refer_sample, cv::Range row_wise, cv::Range col_wise, int canny[]) {
     using namespace cv;
     using std::vector;
     using std::string;
 
     /*
-    * µÚÒ»²½£¬¶ÔÃ¿ÕÅÍ¼ÏñËõ·Å£¬È»ºóÇóËùÓĞÍ¼ÏñµÄÆ½¾ù
+    * ç¬¬ä¸€æ­¥ï¼Œå¯¹æ¯å¼ å›¾åƒç¼©æ”¾ï¼Œç„¶åæ±‚æ‰€æœ‰å›¾åƒçš„å¹³å‡
     */
     Mat t;
     float refer_count = 0;
@@ -199,12 +199,12 @@ cv::Mat templateGenerate(std::vector<std::string> refer_sample, cv::Range row_wi
     t.convertTo(t, CV_8U);
 
     /*
-    * µÚ¶ş²½£¬¶ÔÍ¼Ïñ½øĞĞ¸ßË¹Æ½»¬
+    * ç¬¬äºŒæ­¥ï¼Œå¯¹å›¾åƒè¿›è¡Œé«˜æ–¯å¹³æ»‘
     */
     GaussianBlur(t, t, Size(3, 3), 1);
 
     /*
-    * µÚÈı²½£¬Canny·¨ÌáÈ¡Í¼Ïñ±ßÔµ
+    * ç¬¬ä¸‰æ­¥ï¼ŒCannyæ³•æå–å›¾åƒè¾¹ç¼˜
     */
     Canny(t, t, canny[0], canny[1]);
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _DETECT_H_
 
 namespace detect {

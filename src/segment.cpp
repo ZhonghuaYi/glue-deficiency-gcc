@@ -14,7 +14,6 @@
 int segment::thresholdSegment(cv::Mat& image, float area_percent, int pre_area_num, cv::Mat structure_element) {
     using namespace std;
 	using namespace cv;
-	image = image(Range(0, 800), Range(0, 800));
 
     /*
     * opencv计算直方图的官方方法
@@ -90,7 +89,7 @@ int segment::thresholdSegment(cv::Mat& image, float area_percent, int pre_area_n
 /// <param name="target_template">: 目标区域的模板 </param>
 /// <param name="canny">: Canny法的低阈值和高阈值 </param>
 /// <returns> 目标区域与模板的相关系数 </returns>
-float segment::templateMatch(cv::Mat& image, const cv::Mat target_template, const int* canny) {
+float segment::templateMatch(cv::Mat& image, const cv::Mat target_template, int* canny) {
     using namespace std;
     using namespace cv;
 
@@ -111,6 +110,7 @@ float segment::templateMatch(cv::Mat& image, const cv::Mat target_template, cons
     * 第三步，Canny法提取图像边缘
     */
     Canny(image, image, canny[0], canny[1]);
+  
 
     /*
     * 第四步，通过模板匹配，找到目标区域

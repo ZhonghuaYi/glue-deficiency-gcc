@@ -2,8 +2,8 @@
 #ifndef _FEATURE_H_
 
 namespace feature {
-	int regionArea(int area, int normal_area);
-	int correlation(int ccoeff);
+	int regionArea(const int area, const int normal_area);
+	int correlation(const float ccoeff);
 }
 
 #endif // !_FEATURE_H_
