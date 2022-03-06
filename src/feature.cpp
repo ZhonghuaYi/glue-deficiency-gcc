@@ -18,8 +18,10 @@ int feature::regionArea(const int area, const int normal_area) {
 /// </summary>
 /// <param name="ccoeff">: 相关系数 </param>
 /// <returns></returns>
-int feature::correlation(const float ccoeff) {
-	if (ccoeff < 0.7)
+int feature::correlation(const float ccoeff, float th, float th0) {
+	if (ccoeff < th0)
+		return 2;
+	else if (th0 <= ccoeff < th)
 		return 0;
 	else
 		return 1;

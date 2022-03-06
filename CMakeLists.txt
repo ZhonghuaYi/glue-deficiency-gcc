@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.17)
-add_definitions(-std=c++14)
+add_definitions(-std=c++17)
 project(glue_deficiency_gcc)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 aux_source_directory(src SRC_LIST)

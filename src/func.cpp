@@ -1,7 +1,7 @@
-﻿#include "func.h"
-
-#include<opencv2/highgui.hpp>
+﻿#include<opencv2/highgui.hpp>
 #include<opencv2/imgproc.hpp>
+
+#include "func.h"
 
 /// <summary>
 /// generate a vector on [%start, %end), with %num elements.
@@ -116,6 +116,15 @@ cv::Mat func::cdf(const cv::Mat& in_pic_histogram) {
 }
 
 
+std::vector<std::string> func::refer_generate(std::string dir_path, int flag) {
+    using namespace std;
+    namespace fs = std::filesystem;
+    for (auto file : fs::directory_iterator(dir_path)) {
+        if (file.path())
+    }
+}
+
+
 /// <summary>
 /// search region using recursion.
 /// </summary>
@@ -209,4 +218,19 @@ cv::Mat func::templateGenerate(std::vector<std::string> refer_sample, cv::Range 
     Canny(t, t, canny[0], canny[1]);
 
     return t;
+}
+
+
+void func::result_explain(int result, int n) {
+    std::string message = "Region " + std::to_string(n);
+    if (result == 0)
+        message = message + ": has defect.";
+    else if (result == 1)
+        message = message + ": is normal.";
+    else if (result == 2)
+        message = message + ": has not target region.";
+    else
+        message = message + ": wrong result code.";
+
+    std::cout << message << std::endl;
 }

@@ -190,6 +190,32 @@ void detect::defect2() {
     }
 }
 
-void detect::template_match(cv::Mat image, std::vector<cv::Mat>templates, std::string f, float* thresh){
+void detect::template_match(cv::Mat image, std::vector<cv::Mat>templates, std::vector<int[2]> canny, std::string f, float* thresh) {
+    using namespace std;
+    using namespace cv;
 
+    /*
+    * 设定程序开始运行时间
+    */
+    clock_t time_start, time_end;
+    time_start = clock();
+
+    int t_count = 0;  // 模板计数
+    for (auto template_img : templates) {
+        int result = -1;  // 结果码
+        if (f == "ccoeff") {
+            float CCOEFF = roi::templateMatch(image, template_img, canny[t_count]);
+            string message = "Resion " + to_string(t_count + 1) + "'s correlation coefficient is " + to_string(CCOEFF);
+            cout << message;
+            result = feature::correlation(CCOEFF, thresh[1], thresh[0]);
+        }
+
+        func::result_explain(result, t_count + 1);
+    }
+
+    time_end = clock();  // 记录程序结束运行时间
+    cout << "program running time: " << double(time_end - time_start) / CLOCKS_PER_SEC << "s" << endl;
+    cout << "---------------" << endl;
+    waitKey(0);
+    destroyAllWindows();
 }
