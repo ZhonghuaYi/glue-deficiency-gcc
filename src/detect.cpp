@@ -5,7 +5,7 @@
 #include<opencv2/highgui.hpp>
 
 #include "detect.h"
-#include "segment.h"
+#include "roi.h"
 #include "feature.h"
 #include "func.h"
 
@@ -60,7 +60,7 @@ void detect::defect1()
             /*
             * 阈值分割
             */
-            int region_area = segment::thresholdSegment(image, AREA_PRECENT, PRE_AREA_NUM, structure_element);
+            int region_area = roi::thresholdSegment(image, AREA_PRECENT, PRE_AREA_NUM, structure_element);
 
             /*
             * 根据特征判断此样本是否合格，result为1表示合格，0表示有缺陷
@@ -147,7 +147,7 @@ void detect::defect2() {
                 Mat temp_image;
                 warpAffine(image, temp_image, M, image.size());
 
-                float CCOEFF = segment::templateMatch(temp_image, target_template, canny);
+                float CCOEFF = roi::templateMatch(temp_image, target_template, canny);
                 
                 if (CCOEFF >= max_ccoeff) {
                     max_ccoeff = CCOEFF;
