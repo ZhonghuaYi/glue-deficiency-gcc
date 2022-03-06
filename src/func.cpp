@@ -13,7 +13,7 @@
 std::vector<int> func::linspace(float start, float stop, int num) {
     using std::vector;
 
-    float step = (stop - start) / num;
+    float step = (stop - start) / float(num);
     vector<int> out;
     float temp = start;
     for (int i = 0; i < num; ++i) {
@@ -102,7 +102,7 @@ cv::Mat func::getHistogram(const cv::Mat& img) {
 cv::Mat func::cdf(const cv::Mat& in_pic_histogram) {
     using namespace cv;
 
-    int hist_size = in_pic_histogram.total();
+    int hist_size = int(in_pic_histogram.total());
     Mat transform = Mat::zeros(in_pic_histogram.size(), in_pic_histogram.depth());
     float temp = 0.;
     for (int i = 0; i < hist_size; ++i) {
@@ -116,12 +116,47 @@ cv::Mat func::cdf(const cv::Mat& in_pic_histogram) {
 }
 
 
-std::vector<std::string> func::refer_generate(std::string dir_path, int flag) {
+std::vector<std::string> func::refer_generate(const std::string& dir_path) {
     using namespace std;
     namespace fs = std::filesystem;
-    for (auto file : fs::directory_iterator(dir_path)) {
-        if (file.path())
+
+    vector<string> refer_sample;
+    for (const auto& file : fs::directory_iterator(dir_path)) {
+        fs::path filename = file.path().filename();
+        if (filename.string().substr(0, 5) != "refer")
+            continue;
+        string file_path = dir_path + "/" + filename.string();
+        refer_sample.push_back(file_path);
     }
+    return refer_sample;
+}
+
+
+std::vector<std::string> func::sample_generate(const std::string& dir_path,
+                                               const std::vector<std::string>& sample_list) {
+    using namespace std;
+    namespace fs = std::filesystem;
+
+    vector<string> refer_sample;
+    if (!sample_list.empty()){
+        for (const auto& s : sample_list){
+            string file_path;
+            file_path = dir_path;
+            file_path += "/" + s;
+            refer_sample.push_back(file_path);
+        }
+    }
+    else{
+        for (const auto& file : fs::directory_iterator(dir_path)) {
+            fs::path filename = file.path().filename();
+            if (filename.string().substr(0, 6) != "sample")
+                continue;
+            string file_path = dir_path + "/" + filename.string();
+            refer_sample.push_back(file_path);
+        }
+    }
+
+    return refer_sample;
 }
 
 

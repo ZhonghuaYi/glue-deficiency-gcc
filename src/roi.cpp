@@ -119,8 +119,8 @@ float roi::templateMatch(cv::Mat& image, const cv::Mat target_template, int* can
     matchTemplate(image, target_template, res, TM_CCOEFF_NORMED);
     double max_val = 0;
     Point max_loc;
-    minMaxLoc(res, NULL, &max_val, NULL, &max_loc);
-    float CCOEFF = float(max_val); // 记录此时最匹配区域的相关系数
+    minMaxLoc(res, nullptr, &max_val, nullptr, &max_loc);
+    auto CCOEFF = float(max_val); // 记录此时最匹配区域的相关系数
     Point left_top = max_loc; // 最匹配模板的区域的左上角坐标，为宽和高，不是x和y坐标
     image = image(Rect(left_top.x, left_top.y, template_shape[1], template_shape[0]));
     return CCOEFF;

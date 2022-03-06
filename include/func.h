@@ -18,8 +18,9 @@ namespace func {
     void quickSortWithIndex(std::vector<int>& v, std::vector<int>& v_index, int start, int end);
     cv::Mat getHistogram(const cv::Mat& img);
     cv::Mat cdf(const cv::Mat& in_pic_histogram);
-    std::vector<std::string> refer_generate(std::string dir_path, int flag);
-    std::vector<std::string> sample_generate(std::string dir_path, std::vector<std::string> sample_list, int flag);
+    std::vector<std::string> refer_generate(const std::string& dir_path);
+    std::vector<std::string> sample_generate(const std::string& dir_path,
+                                             const std::vector<std::string>& sample_list=std::vector<std::string>());
     int neighborExpand(cv::Mat& img, int x, int y, int value, int region_area);
     SubRegion areaSegment(cv::Mat& img, int pre_area_num);
     cv::Mat templateGenerate(std::vector<std::string> refer_sample, cv::Range row_wise, cv::Range col_wise, int canny[]);
