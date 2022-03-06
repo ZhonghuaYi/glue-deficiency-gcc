@@ -189,3 +189,7 @@ void detect::defect2() {
         destroyAllWindows();
     }
 }
+
+void detect::template_match(cv::Mat image, std::vector<cv::Mat>templates, std::string f, float* thresh){
+
+}
