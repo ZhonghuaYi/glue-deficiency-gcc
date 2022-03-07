@@ -116,7 +116,7 @@ cv::Mat func::cdf(const cv::Mat& in_pic_histogram) {
 }
 
 
-std::vector<std::string> func::refer_generate(const std::string& dir_path) {
+std::vector<std::string> func::referGenerate(const std::string& dir_path) {
     using namespace std;
     namespace fs = std::filesystem;
 
@@ -132,7 +132,7 @@ std::vector<std::string> func::refer_generate(const std::string& dir_path) {
 }
 
 
-std::vector<std::string> func::sample_generate(const std::string& dir_path,
+std::vector<std::string> func::sampleGenerate(const std::string& dir_path,
                                                const std::vector<std::string>& sample_list) {
     using namespace std;
     namespace fs = std::filesystem;
@@ -215,7 +215,8 @@ SubRegion func::areaSegment(cv::Mat& img, int pre_area_num) {
 }
 
 
-cv::Mat func::templateGenerate(std::vector<std::string> refer_sample, cv::Range row_wise, cv::Range col_wise, int canny[]) {
+cv::Mat func::templateGenerate(const std::vector<std::string>& refer_sample, cv::Range row_wise, cv::Range col_wise,
+                               const std::string& flag, int canny[], int thresh) {
     using namespace cv;
     using std::vector;
     using std::string;
@@ -225,10 +226,10 @@ cv::Mat func::templateGenerate(std::vector<std::string> refer_sample, cv::Range 
     */
     Mat t;
     float refer_count = 0;
-    for (auto i : refer_sample) {
+    for (const auto& i : refer_sample) {
         Mat image = imread(i, 0);
-        float scale = (image.rows < image.cols ? image.rows : image.cols) / float(500);
-        Size new_size = Size(round(image.cols / scale), round(image.rows / scale));
+        double scale = float(image.rows < image.cols ? image.rows : image.cols) / float(500);
+        Size new_size = Size(int(round(image.cols / scale)), int(round(image.rows / scale)));
         resize(image, image, new_size);
         image = image(row_wise, col_wise);
         image.convertTo(image, CV_32F);
@@ -242,21 +243,51 @@ cv::Mat func::templateGenerate(std::vector<std::string> refer_sample, cv::Range 
     t = t / refer_count;
     t.convertTo(t, CV_8U);
 
-    /*
-    * 第二步，对图像进行高斯平滑
-    */
-    GaussianBlur(t, t, Size(3, 3), 1);
+    if (flag == "canny"){
+        /*
+         * 对图像进行高斯平滑
+         */
+        GaussianBlur(t, t, Size(3, 3), 1);
 
-    /*
-    * 第三步，Canny法提取图像边缘
-    */
-    Canny(t, t, canny[0], canny[1]);
+        /*
+        * Canny法提取图像边缘
+        */
+        Canny(t, t, canny[0], canny[1]);
+    }
+    else if(flag == "thresh"){
+        medianBlur(t, t, 3);
+        threshold(t, t, thresh, 255, THRESH_BINARY);
+    }
 
     return t;
 }
 
 
-void func::result_explain(int result, int n) {
+std::vector<cv::Mat> func::gaussianPyramid(cv::Mat image, const std::string& flag, int num) {
+    using namespace cv;
+    using namespace std;
+    vector<Mat> pyramid;
+    pyramid.push_back(image);
+    if (flag == "up"){
+        for(int i=0; i<num;i++){
+            pyrUp(image, image);
+            pyramid.push_back(image);
+        }
+    }
+    else if(flag == "down"){
+        for(int i=0;i<num;i++){
+            pyrDown(image, image);
+            pyramid.push_back(image);
+        }
+    }
+    vector<Mat> temp(pyramid);
+    for(int i = 0;i<pyramid.size();i++)
+        pyramid[i] = temp[temp.size()-i-1];
+    return pyramid;
+}
+
+
+void func::resultExplain(int result, int n) {
     std::string message = "Region " + std::to_string(n);
     if (result == 0)
         message = message + ": has defect.";

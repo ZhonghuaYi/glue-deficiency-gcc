@@ -134,7 +134,8 @@ void detect::defect2() {
         */
         
         Mat target_template;
-        target_template = func::templateGenerate(REFER_LIST, Range(20, 100), Range(220, 470), canny);
+        target_template = func::templateGenerate(REFER_LIST, Range(20, 100),
+                                                 Range(220, 470), "canny", canny);
         imshow("template", target_template);
 
         for (auto i : sample) {
@@ -167,7 +168,7 @@ void detect::defect2() {
             */
             if (f == "ccoeff") {
                 cout << "sample " << count << "'s correlation coefficient is " << max_ccoeff << endl;
-                int result = feature::correlation(max_ccoeff);
+                int result = feature::correlation(max_ccoeff, 0.6, 0.2);
                 results.push_back(result);
             }
 
@@ -190,7 +191,7 @@ void detect::defect2() {
     }
 }
 
-void detect::template_match(cv::Mat image, std::vector<cv::Mat>templates, std::vector<int[2]> canny, std::string f, float* thresh) {
+void detect::templateMatch(cv::Mat image, const std::vector<cv::Mat>&templates, std::vector<int[2]> canny, std::string f, float* thresh) {
     using namespace std;
     using namespace cv;
 
@@ -201,7 +202,7 @@ void detect::template_match(cv::Mat image, std::vector<cv::Mat>templates, std::v
     time_start = clock();
 
     int t_count = 0;  // 模板计数
-    for (auto template_img : templates) {
+    for (const auto& template_img : templates) {
         int result = -1;  // 结果码
         if (f == "ccoeff") {
             float CCOEFF = roi::templateMatch(image, template_img, canny[t_count]);
@@ -210,7 +211,7 @@ void detect::template_match(cv::Mat image, std::vector<cv::Mat>templates, std::v
             result = feature::correlation(CCOEFF, thresh[1], thresh[0]);
         }
 
-        func::result_explain(result, t_count + 1);
+        func::resultExplain(result, t_count + 1);
     }
 
     time_end = clock();  // 记录程序结束运行时间
