@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 2.8)
+﻿cmake_minimum_required(VERSION 3.4)
 set(CMAKE_CXX_STANDARD 17)
 #add_definitions(-std=c++17)
 project(glue_deficiency_gcc)
