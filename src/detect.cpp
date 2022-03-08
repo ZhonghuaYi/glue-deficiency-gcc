@@ -1,7 +1,4 @@
-﻿#include<iostream>
-#include<vector>
-#include<opencv2/core.hpp>
-#include<opencv2/imgproc.hpp>
+﻿#include<opencv2/imgproc.hpp>
 #include<opencv2/highgui.hpp>
 
 #include "detect.h"
@@ -191,7 +188,7 @@ void detect::defect2() {
     }
 }
 
-void detect::templateMatch(cv::Mat image, const std::vector<cv::Mat>&templates, std::vector<int[2]> canny, std::string f, float* thresh) {
+void detect::templateMatch(cv::Mat image, const std::vector<cv::Mat>&templates, std::vector<int*> canny, const std::string& f, float* thresh) {
     using namespace std;
     using namespace cv;
 
