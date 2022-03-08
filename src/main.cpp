@@ -1,7 +1,9 @@
 ﻿#include <iostream>
+#include <opencv2/highgui.hpp>
+
 #include "func.h"
 #include "detect.h"
-#include <opencv2/highgui.hpp>
+
 
 
 int main() {
@@ -20,9 +22,9 @@ int main() {
         /*
         * 读取样本
         */
-        string sample_root = "../image/sample/";
-//        sample = func::sampleGenerate(sample_root);
-        sample.push_back(sample_root+"sample000.BMP");
+        string sample_root = "../image/sample";
+        sample = func::sampleGenerate(sample_root);
+//        sample.push_back(sample_root+"sample000.BMP");
         // defect1();
         // defect2();
 
@@ -30,11 +32,11 @@ int main() {
          * 读取参考样本
          */
         string refer1_root = "../image/refer1/";
-//        vector<string> refer1_sample = func::referGenerate(refer1_root);
-        vector<string> refer1_sample = {refer1_root+"refer000.BMP"};
+        vector<string> refer1_sample = func::referGenerate(refer1_root);
+//        vector<string> refer1_sample = {refer1_root+"refer000.BMP"};
         string refer2_root = "../image/refer2/";
-//        vector<string> refer2_sample = func::referGenerate(refer2_root);
-        vector<string> refer2_sample = {refer2_root+"refer000.BMP"};
+        vector<string> refer2_sample = func::referGenerate(refer2_root);
+//        vector<string> refer2_sample = {refer2_root+"refer000.BMP"};
 
         int canny1[2] = {50, 100};
         int canny2[2] = {100, 200};
@@ -58,8 +60,8 @@ int main() {
 //            string window_name = "template" + to_string(i);
 //            imshow(window_name, templates[i]);
 //        }
-//        waitKey(0);
-//        destroyAllWindows();
+        waitKey(0);
+        destroyAllWindows();
     }
 //    else if (sample_set == 2){
 //        /*
@@ -110,10 +112,8 @@ int main() {
 
     int count = 1;
     for(const auto& s : sample){
-        cout << s << endl;
+        cout << "sample" << count << ":" << endl;
         Mat image = imread(s, imread_flag);
-        imshow("img", image);
-        waitKey(0);
         templateMatch(image, templates, canny_set, f, thresh);
         count ++;
     }

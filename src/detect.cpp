@@ -188,7 +188,7 @@ void detect::defect2() {
     }
 }
 
-void detect::templateMatch(cv::Mat image, const std::vector<cv::Mat>&templates, std::vector<int*> canny, const std::string& f, float* thresh) {
+void detect::templateMatch(const cv::Mat& image, const std::vector<cv::Mat>& templates, std::vector<int*> canny, const std::string& f, float* thresh) {
     using namespace std;
     using namespace cv;
 
@@ -202,17 +202,19 @@ void detect::templateMatch(cv::Mat image, const std::vector<cv::Mat>&templates, 
     for (const auto& template_img : templates) {
         int result = -1;  // 结果码
         if (f == "ccoeff") {
-            float CCOEFF = roi::templateMatch(image, template_img, canny[t_count]);
-            string message = "Resion " + to_string(t_count + 1) + "'s correlation coefficient is " + to_string(CCOEFF);
-            cout << message;
+            Mat image_roi = image.clone();
+            float CCOEFF = roi::templateMatch(image_roi, template_img, canny[t_count]);
+            string message = "Region " + to_string(t_count + 1) + "'s correlation coefficient is " + to_string(CCOEFF);
+            cout << message << endl;
             result = feature::correlation(CCOEFF, thresh[1], thresh[0]);
         }
-
+        cout << result <<endl;
         func::resultExplain(result, t_count + 1);
+        t_count ++;
     }
 
     time_end = clock();  // 记录程序结束运行时间
-    cout << "program running time: " << double(time_end - time_start) / CLOCKS_PER_SEC << "s" << endl;
+    cout << "detection running time: " << double(time_end - time_start) / CLOCKS_PER_SEC << "s" << endl;
     cout << "---------------" << endl;
     waitKey(0);
     destroyAllWindows();

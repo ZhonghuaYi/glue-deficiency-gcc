@@ -7,7 +7,7 @@
 namespace detect {
 	void defect1();
 	void defect2();
-    void templateMatch(cv::Mat image, const std::vector<cv::Mat>&templates, std::vector<int*> canny, const std::string& f, float* thresh);
+    void templateMatch(const cv::Mat& image, const std::vector<cv::Mat>&templates, std::vector<int*> canny, const std::string& f, float* thresh);
 }
 
 #endif // !_DETECT_H_

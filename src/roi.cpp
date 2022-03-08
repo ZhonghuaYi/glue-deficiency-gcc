@@ -2,6 +2,7 @@
 
 #include"roi.h"
 #include"func.h"
+#include <opencv2/highgui.hpp>
 
 /// <summary>
 /// 阈值分割
@@ -124,10 +125,10 @@ float roi::templateMatch(cv::Mat &image, const cv::Mat &target_template, int *ca
     int angle_num[3] = {10, 11, 11};  // 对每层模板旋转的角度个数，长度应与t_pyramid相同
     float match_angle = 0;
     for (int i = 0; i < t_pyramid.size(); i++) {
-        float max_ccoeff = 0;
+        double max_ccoeff = 0;
         float angle_step = (angle_interval[1] - angle_interval[0]) / (float(angle_num[i]) - 1);
         for (int j = 0; j < angle_num[i]; j++) {
-            float angle = angle_interval[0] + float(j)*angle_step;  // 得到角度
+            float angle = angle_interval[0] + float(j) * angle_step;  // 得到角度
 
             /*
              * 旋转模板
@@ -140,22 +141,22 @@ float roi::templateMatch(cv::Mat &image, const cv::Mat &target_template, int *ca
              * 匹配区域
              */
             Mat res;
-            matchTemplate(image, target_template, res, TM_CCOEFF_NORMED); //这里使用归一化的相关系数
+            matchTemplate(img_pyramid[i], t, res, TM_CCOEFF_NORMED); //这里使用归一化的相关系数
             double max_val = 0;
             minMaxLoc(res, nullptr, &max_val, nullptr, nullptr);
-            auto CCOEFF = float(max_val); // 记录此时最匹配区域的相关系数
-            if (CCOEFF >= max_ccoeff){
+            auto CCOEFF = max_val; // 记录此时最匹配区域的相关系数
+            if (CCOEFF >= max_ccoeff) {
                 max_ccoeff = CCOEFF;
                 match_angle = angle;
             }
         }
-        if (i<(t_pyramid.size()-1)){
+        if (i < (t_pyramid.size() - 1)) {
             angle_interval[0] = match_angle - angle_step;
             angle_interval[1] = match_angle + angle_step;
         }
     }
 
-    // cout << "most matched angle: " << match_angle << endl;
+//     cout << "most matched angle: " << match_angle << endl;
 
     /*
     * 通过模板匹配，找到目标区域

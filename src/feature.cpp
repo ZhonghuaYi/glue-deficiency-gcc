@@ -21,7 +21,7 @@ int feature::regionArea(const int area, const int normal_area) {
 int feature::correlation(const float ccoeff, float th, float th0) {
 	if (ccoeff < th0)
 		return 2;
-	else if (th0 <= ccoeff < th)
+	else if (th0 <= ccoeff && ccoeff < th)
 		return 0;
 	else
 		return 1;
