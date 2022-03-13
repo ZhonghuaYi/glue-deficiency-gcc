@@ -216,6 +216,6 @@ void detect::templateMatch(const cv::Mat& image, const std::vector<cv::Mat>& tem
     time_end = clock();  // 记录程序结束运行时间
     cout << "detection running time: " << double(time_end - time_start) / CLOCKS_PER_SEC << "s" << endl;
     cout << "---------------" << endl;
-    waitKey(0);
-    destroyAllWindows();
+//    waitKey(0);
+//    destroyAllWindows();
 }
