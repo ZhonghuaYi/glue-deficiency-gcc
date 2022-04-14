@@ -158,7 +158,7 @@ int func::neighborExpand(cv::Mat &img, int x, int y, int value, int region_area)
 }
 
 
-SubRegion func::areaSegment(cv::Mat &img, int pre_area_num) {
+SubRegion func::areaSegment(cv::Mat &img) {
     using namespace cv;
     using std::vector;
 
@@ -174,7 +174,7 @@ SubRegion func::areaSegment(cv::Mat &img, int pre_area_num) {
                 area = neighborExpand(img, i, j, region_value, area);
                 region_value += 1;
                 region_num += 1;
-                out.value.push_back(value);
+                out.value.push_back(region_value);
                 out.area.push_back(area);
                 out.start.push_back(start);
             }

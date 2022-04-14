@@ -12,7 +12,7 @@
 /// <param name="pre_area_num">: 预设的最大区域数量 </param>
 /// <param name="structure_element">: 用于形态学计算的结构元素 </param>
 /// <returns> 目标区域的面积 </returns>
-int roi::thresholdSegment(cv::Mat &image, float area_percent, int pre_area_num, const cv::Mat &structure_element) {
+int roi::thresholdSegment(cv::Mat &image, float area_percent, const cv::Mat &structure_element) {
     using namespace std;
     using namespace cv;
 
@@ -63,7 +63,7 @@ int roi::thresholdSegment(cv::Mat &image, float area_percent, int pre_area_num, 
     * 将图像分成若干个区域
     */
     SubRegion sub_regions;
-    sub_regions = func::areaSegment(image, pre_area_num);
+    sub_regions = func::areaSegment(image);
 
 
     /*
