@@ -2,7 +2,7 @@
 #ifndef _FEATURE_H_
 
 namespace feature {
-	int regionArea(int area, int normal_area);
+	int regionArea(int area, int normal_area, float thresh);
 	int correlation(float ccoeff, float th, float th0);
 }
 
