@@ -4,7 +4,7 @@
 #include "func.h"
 
 
-cv::Mat func::imageResize(const cv::Mat& image, int size){
+cv::Mat func::imageResize(const cv::Mat &image, int size) {
     cv::Mat out;
     using namespace std;
     float scale = float(min(image.rows, image.cols)) / float(size);
@@ -172,11 +172,11 @@ SubRegion func::areaSegment(cv::Mat &img) {
                 int area = 0;
                 vector<int> start = {i, j};
                 area = neighborExpand(img, i, j, region_value, area);
-                region_value += 1;
-                region_num += 1;
                 out.value.push_back(region_value);
                 out.area.push_back(area);
                 out.start.push_back(start);
+                region_value += 1;
+                region_num += 1;
             }
         }
     }
@@ -184,8 +184,9 @@ SubRegion func::areaSegment(cv::Mat &img) {
 }
 
 
-std::vector<cv::Mat> func::templateGenerate(const std::vector<std::string> &refer_sample, cv::Range row_wise, cv::Range col_wise,
-                               const std::string &flag, int canny[], int thresh) {
+std::vector<cv::Mat>
+func::templateGenerate(const std::vector<std::string> &refer_sample, cv::Range row_wise, cv::Range col_wise,
+                       const std::string &flag, int canny[], int thresh) {
     using namespace cv;
     using std::vector;
     using std::string;

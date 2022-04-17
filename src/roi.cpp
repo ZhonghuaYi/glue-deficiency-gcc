@@ -25,7 +25,6 @@ int roi::thresholdSegment(cv::Mat &image, float area_percent, const cv::Mat &str
     calcHist(&image, 1, channels, Mat(), hist, 1, histSize, ranges);
     */
 
-
     /*
     * 第一步
     * 在参考图像中，当手动阈值在37时，阈值分割效果明显。于是考虑到灰度小于37的区域大概面积占比是0.3，
@@ -40,7 +39,6 @@ int roi::thresholdSegment(cv::Mat &image, float area_percent, const cv::Mat &str
     int point[2] = {};
     minMaxIdx(abs(img_cdf - area_percent), 0, 0, point, 0);
     int index = point[1];
-
 
     /*
     * 第二步
@@ -57,27 +55,24 @@ int roi::thresholdSegment(cv::Mat &image, float area_percent, const cv::Mat &str
     resize(image, image, Size(70, 70));
     threshold(image, image, index, 255, THRESH_BINARY);
 
-
     /*
     * 第三步
     * 将图像分成若干个区域
     */
     SubRegion sub_regions;
     sub_regions = func::areaSegment(image);
-
-
     /*
     * 第四步
     * 将面积第二的区域提取出来
     */
     vector<int> regions_area = sub_regions.area;
-    vector<int> regions_area_index = func::range(regions_area.size());
-    func::quickSortWithIndex(regions_area, regions_area_index, 0, regions_area.size());
+    vector<int> regions_area_index = func::range(int(regions_area.size()));
+    func::quickSortWithIndex(regions_area, regions_area_index, 0, int(regions_area.size()));
     int ind = regions_area_index[regions_area_index.size() - 2];
     int target_region_value = sub_regions.value[ind];  // 获取到面积第二的区域的值
     int region_area = sub_regions.area[ind];  // 将该区域的面积记录下来
     Mat compare_mat = Mat::ones(image.size(), image.depth()) * target_region_value;
-    Mat diff = compare_mat != image;
+    Mat diff = (compare_mat != image);
     image = diff;
 
     return region_area;
