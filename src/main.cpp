@@ -29,7 +29,7 @@ void thresh_segment(cv::Mat image, float area_percent, const cv::Mat &structure_
     end_time = clock();
     cout << "program running time: " << double(end_time - start_time) / CLOCKS_PER_SEC << "s" << endl;
 
-    waitKey(0);
+//    waitKey(0);
     destroyAllWindows();
 }
 
