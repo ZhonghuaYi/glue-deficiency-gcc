@@ -2,8 +2,11 @@
 set(CMAKE_CXX_STANDARD 17)
 add_definitions(-std=c++17)
 set(CMAKE_CXX_FLAGS "-std=c++17")
-#set(CMAKE_EXE_LINKER_FLAGS "-lcblas")
 project(glue_deficiency_gcc)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(CMAKE_EXE_LINKER_FLAGS "-lcblas")
+endif()
 
 find_package(OpenCV REQUIRED)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
