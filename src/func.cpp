@@ -186,7 +186,7 @@ SubRegion func::areaSegment(cv::Mat &img) {
 
 std::vector<cv::Mat>
 func::templateGenerate(const std::vector<std::string> &refer_sample, cv::Range row_wise, cv::Range col_wise,
-                       const std::string &flag, int canny[], int thresh) {
+                       const std::string &flag, std::vector<int> canny, int thresh) {
     using namespace cv;
     using std::vector;
     using std::string;
@@ -269,4 +269,45 @@ void func::resultExplain(int result, int n) {
         message = message + ": wrong result code.";
 
     std::cout << message << std::endl;
+}
+
+void func::drawLine(cv::Mat &drawing, std::vector<cv::Vec4i> &lines) {
+    for (auto &line: lines) {
+        cv::line(drawing, cv::Point(line[0], line[1]), cv::Point(line[2], line[3]), 255);
+    }
+}
+
+std::vector<cv::Vec4i> func::defect1HoughLine(const cv::Mat &image) {
+    using namespace std;
+    using namespace cv;
+    vector<Vec4i> lines, out;
+    HoughLinesP(image, lines, 1, CV_PI / 180, 10, 4, 4);
+    for (auto &line: lines) {
+        int x1 = line[0], y1 = line[1], x2 = line[2], y2 = line[3];
+        float k;
+        if (x1 != x2) {
+            k = abs(float(y2 - y1) / float(x2 - x1));
+            if (k > 0.3 && k < 3)
+                out.push_back(line);
+        }
+    }
+    return out;
+}
+
+
+std::vector<cv::Vec4i> func::defect2HoughLine(const cv::Mat &image) {
+    using namespace std;
+    using namespace cv;
+    vector<Vec4i> lines, out;
+    HoughLinesP(image, lines, 1, CV_PI / 180, 5, 3, 2);
+    for (auto &line: lines) {
+        int x1 = line[0], y1 = line[1], x2 = line[2], y2 = line[3];
+        float k;
+        if (x1 != x2) {
+            k = abs(float(y2 - y1) / float(x2 - x1));
+            if (k < 0.5)
+                out.push_back(line);
+        }
+    }
+    return out;
 }

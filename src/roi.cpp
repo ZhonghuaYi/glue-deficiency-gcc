@@ -85,7 +85,7 @@ int roi::thresholdSegment(cv::Mat &image, float area_percent, const cv::Mat &str
 /// <param name="target_template">: 目标区域的模板 </param>
 /// <param name="canny">: Canny法的低阈值和高阈值 </param>
 /// <returns> 目标区域与模板的相关系数 </returns>
-float roi::templateMatch(cv::Mat &image, const cv::Mat &target_template, int *canny) {
+float roi::templateMatch(cv::Mat &image, const cv::Mat &target_template, std::vector<int> canny) {
     using namespace std;
     using namespace cv;
 

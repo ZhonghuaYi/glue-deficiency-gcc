@@ -36,11 +36,17 @@ namespace func {
 
     std::vector<cv::Mat>
     templateGenerate(const std::vector<std::string> &refer_sample, cv::Range row_wise, cv::Range col_wise,
-                     const std::string &flag = "canny", int canny[] = nullptr, int thresh = 50);
+                     const std::string &flag = "canny", std::vector<int> canny = std::vector<int>(), int thresh = 50);
 
     std::vector<cv::Mat> gaussianPyramid(cv::Mat image, const std::string &flag, int num);
 
     void resultExplain(int result, int n);
+
+    void drawLine(cv::Mat &drawing, std::vector<cv::Vec4i> &lines);
+
+    std::vector<cv::Vec4i> defect1HoughLine(const cv::Mat &image);
+
+    std::vector<cv::Vec4i> defect2HoughLine(const cv::Mat &image);
 }
 
 #endif // !__FUNC_H_

@@ -28,12 +28,13 @@ void Data::LoadData(const int &sample_set, const std::string &segment) {
             // 用于形态学计算的矩形结构元素
             structure_element = cv::getStructuringElement(MORPH_RECT, Size(7, 7));
         } else if (segment == "template_match") {
-            int canny1[2] = {50, 100};
-            int canny2[2] = {10, 200};
+            vector<int> canny1 = {50, 100};
+            vector<int> canny2 = {10, 200};
             canny.push_back(canny1);
             canny.push_back(canny2);
-            string f;
-            f = "sift";
+            f = "hough";
+            t_thresh.push_back(0.1);
+            t_thresh.push_back(0.75);
 
             // 生成模板
             vector<Mat> t_out;
