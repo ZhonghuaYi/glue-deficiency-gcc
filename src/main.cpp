@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <opencv2/highgui.hpp>
+#include <opencv2/features2d.hpp>
 #include <ctime>
 
 #include "func.h"
@@ -61,16 +62,30 @@ templateMatch(const cv::Mat &image, const std::vector<cv::Mat> &edge_templates, 
                 Mat drawing = Mat::zeros(image_roi.rows, image_roi.cols, image_roi.depth());
                 vector<Vec4i> lines = func::defect1HoughLine(image_roi);
                 func::drawLine(drawing, lines);
-                imshow("hough1", drawing);
-                waitKey(0);
+//                imshow("hough1", drawing);
+//                waitKey(0);
                 result = feature::defect1Hough(float(image_roi.rows), float(image_roi.cols), lines, 4);
             } else if (t_count == 1) {
                 Mat drawing = Mat::zeros(image_roi.rows, image_roi.cols, image_roi.depth());
                 vector<Vec4i> lines = func::defect2HoughLine(image_roi);
                 func::drawLine(drawing, lines);
-                imshow("hough2", drawing);
-                waitKey(0);
+//                imshow("hough2", drawing);
+//                waitKey(0);
                 result = feature::defect2Hough(float(image_roi.rows), float(image_roi.cols), lines, 10);
+            }
+        }
+        else if (f == "sift"){
+            bool USE_DES = true;
+            if(USE_DES){
+                // 检测
+                Mat image_roi = image.clone();
+                roi::templateMatch(image_roi, t, canny[t_count], 1);
+                // 创建sift实例
+                Ptr<SIFT> sift = SIFT::create();
+                // 模板的sift特征
+                vector<KeyPoint> kp_t;
+                Mat des_t;
+                sift->detectAndCompute(templates[t_count], Mat() ,kp_t, des_t);
             }
         }
         func::resultExplain(result, t_count + 1);

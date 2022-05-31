@@ -85,7 +85,7 @@ int roi::thresholdSegment(cv::Mat &image, float area_percent, const cv::Mat &str
 /// <param name="target_template">: 目标区域的模板 </param>
 /// <param name="canny">: Canny法的低阈值和高阈值 </param>
 /// <returns> 目标区域与模板的相关系数 </returns>
-float roi::templateMatch(cv::Mat &image, const cv::Mat &target_template, std::vector<int> canny) {
+float roi::templateMatch(cv::Mat &image, const cv::Mat &target_template, std::vector<int> canny, int flag) {
     using namespace std;
     using namespace cv;
 
@@ -101,6 +101,9 @@ float roi::templateMatch(cv::Mat &image, const cv::Mat &target_template, std::ve
     * 第二步，对图像进行高斯平滑
     */
     GaussianBlur(image, image, Size(3, 3), 1);
+    Mat image_no_edge;
+    if (flag == 1)
+        image_no_edge = image.clone();
 
     /*
     * 第三步，Canny法提取图像边缘
@@ -166,6 +169,9 @@ float roi::templateMatch(cv::Mat &image, const cv::Mat &target_template, std::ve
     minMaxLoc(res, nullptr, &max_val, nullptr, &max_loc);
     auto CCOEFF = float(max_val); // 记录此时最匹配区域的相关系数
     Point left_top = max_loc; // 最匹配模板的区域的左上角坐标，为宽和高，不是x和y坐标
-    image = image(Rect(left_top.x, left_top.y, template_shape[1], template_shape[0]));
+    if (flag == 0)
+        image = image(Rect(left_top.x, left_top.y, template_shape[1], template_shape[0]));
+    else if (flag == 1)
+        image = image_no_edge(Rect(left_top.x, left_top.y, template_shape[1], template_shape[0]));
     return float(CCOEFF);
 }
