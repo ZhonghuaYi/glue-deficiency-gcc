@@ -40,13 +40,18 @@ namespace func {
 
     std::vector<cv::Mat> gaussianPyramid(cv::Mat image, const std::string &flag, int num);
 
-    void resultExplain(int result, int n);
+    void nearestPoint(cv::KeyPoint& point, std::vector<cv::KeyPoint>& pt_set, double& min_distance, int& index);
+
+    std::vector<cv::DMatch> pointLocationMatch(std::vector<cv::KeyPoint>& kp_t, std::vector<cv::KeyPoint>& kp_img,
+                                               double th);
 
     void drawLine(cv::Mat &drawing, std::vector<cv::Vec4i> &lines);
 
     std::vector<cv::Vec4i> defect1HoughLine(const cv::Mat &image);
 
     std::vector<cv::Vec4i> defect2HoughLine(const cv::Mat &image);
+
+    void resultExplain(int result, int n);
 }
 
 #endif // !__FUNC_H_

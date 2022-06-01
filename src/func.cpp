@@ -218,7 +218,7 @@ func::templateGenerate(const std::vector<std::string> &refer_sample, cv::Range r
     * 对图像进行平滑
     */
     medianBlur(t, t, 5);
-    out.push_back(t);
+    out.push_back(t.clone());
 
     if (flag == "canny") {
         /*
@@ -257,19 +257,37 @@ std::vector<cv::Mat> func::gaussianPyramid(cv::Mat image, const std::string &fla
 }
 
 
-void func::resultExplain(int result, int n) {
-    std::string message = "Region " + std::to_string(n);
-    if (result == 0)
-        message = message + ": has defect.";
-    else if (result == 1)
-        message = message + ": is normal.";
-    else if (result == 2)
-        message = message + ": has not target region.";
-    else
-        message = message + ": wrong result code.";
-
-    std::cout << message << std::endl;
+void func::nearestPoint(cv::KeyPoint& point, std::vector<cv::KeyPoint>& pt_set, double& min_distance, int& index){
+    min_distance = 1000000;
+    index = 0;
+    double distance;
+    for (int i = 0;i<pt_set.size();i++){
+        distance = sqrt(pow(point.pt.x-pt_set[i].pt.x, 2)+
+                        pow(point.pt.y-pt_set[i].pt.y, 2));
+        if(distance < min_distance){
+            min_distance = distance;
+            index = i;
+        }
+    }
 }
+
+
+std::vector<cv::DMatch> func::pointLocationMatch(std::vector<cv::KeyPoint>& kp_t, std::vector<cv::KeyPoint>& kp_img,
+                                           double th){
+    std::vector<cv::DMatch> matches;
+    double distance_1, distance_2;
+    int index_1, index_2;
+    for(int i = 0; i < kp_t.size(); i++){
+        nearestPoint(kp_t[i], kp_img, distance_1, index_1);
+        nearestPoint(kp_img[i], kp_t, distance_2, index_2);
+        if (index_2 == i && distance_1 <= th){
+            cv::DMatch match(i, index_1, float(distance_1));
+            matches.push_back(match);
+        }
+    }
+    return matches;
+}
+
 
 void func::drawLine(cv::Mat &drawing, std::vector<cv::Vec4i> &lines) {
     for (auto &line: lines) {
@@ -310,4 +328,19 @@ std::vector<cv::Vec4i> func::defect2HoughLine(const cv::Mat &image) {
         }
     }
     return out;
+}
+
+
+void func::resultExplain(int result, int n) {
+    std::string message = "Region " + std::to_string(n);
+    if (result == 0)
+        message = message + ": has defect.";
+    else if (result == 1)
+        message = message + ": is normal.";
+    else if (result == 2)
+        message = message + ": has not target region.";
+    else
+        message = message + ": wrong result code.";
+
+    std::cout << message << std::endl;
 }

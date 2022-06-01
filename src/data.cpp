@@ -2,6 +2,7 @@
 #include "func.h"
 
 #include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
 
 void Data::LoadData(const int &sample_set, const std::string &segment) {
     using namespace std;
@@ -32,7 +33,7 @@ void Data::LoadData(const int &sample_set, const std::string &segment) {
             vector<int> canny2 = {10, 200};
             canny.push_back(canny1);
             canny.push_back(canny2);
-            f = "hough";
+            f = "sift";
             t_thresh.push_back(0.1);
             t_thresh.push_back(0.75);
 

@@ -67,3 +67,25 @@ int feature::defect2Hough(float img_rows, float img_cols, std::vector<cv::Vec4i>
     else
         return 0;
 }
+
+int
+feature::keyPoints(std::vector<cv::KeyPoint> &kp_t, std::vector<cv::KeyPoint> &kp_img, std::vector<cv::DMatch> &matches,
+                   double th, double th0, double min_distance) {
+    double match_percent;
+    match_percent = double(matches.size()) / (double(kp_t.size())+double(kp_img.size())-double(matches.size()));
+    std::cout << "match percent: "<<match_percent<<std::endl;
+    if(match_percent < th0)
+        return 2;
+    else if(match_percent >= th0 && match_percent < th)
+        return 0;
+    else{
+        double distance_sum = 0, average_distance;
+        for(auto &m : matches)
+            distance_sum += m.distance;
+        average_distance = distance_sum / double(matches.size());
+        if(average_distance < min_distance)
+            return 1;
+        else
+            return 0;
+    }
+}
