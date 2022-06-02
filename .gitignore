@@ -89,6 +89,7 @@ fabric.properties
 
 build/
 .vs/
+.vscode/
 CMakeSettings.json
 
 !/bin
